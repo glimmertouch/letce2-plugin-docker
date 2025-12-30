@@ -60,7 +60,7 @@ services:
       - SYS_NICE
     volumes:
       - ${__top_dir}/${node}:/experiment/${node}:ro
-      - ${__top_dir}/persist/${node}-biz:/experiment/persist/${node}-biz:rw
+      - ${__top_dir}/persist/${node}:/experiment/persist/${node}:rw
     command: ["sleep", "infinity"]
   % endif
 % endfor

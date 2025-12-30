@@ -285,17 +285,29 @@ class Plugin(PluginBase):
             print(f"❌ Error during experiment start: {e}", file=sys.stderr)
             sys.exit(1)
             
+        print("🚀 Initializing nodes...")
         for node in nodes:
             if node == 'host':
                 continue
             
+            emane_node = f"letce2-{node}-emane"
             top_dir = "/experiment"
             env = "" # pre-built into container
             log_path = f"./persist/{node}/var/log/init.log"
             exec_cmd = [
-                'docker', 'exec', node,
+                'docker', 'exec', emane_node,
                 'bash', '-c',
                 f"/experiment/{node}/init {top_dir} {node} '{env}' '{start_utc}'"
+            ]
+            with open(log_path, 'w') as log_file:
+                subprocess.Popen(exec_cmd, stdout=log_file, stderr=subprocess.STDOUT)
+            
+            biz_node = f"letce2-{node}-biz"
+            log_path = f"./persist/{node}/var/log/biz_init.log"
+            exec_cmd = [
+                'docker', 'exec', biz_node,
+                'bash', '-c',
+                f"/experiment/{node}/biz-init {top_dir} {node} '{env}' '{start_utc}'"
             ]
             with open(log_path, 'w') as log_file:
                 subprocess.Popen(exec_cmd, stdout=log_file, stderr=subprocess.STDOUT)
