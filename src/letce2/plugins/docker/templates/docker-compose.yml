@@ -37,6 +37,7 @@ services:
     image: ${emane_image}
     container_name: letce2-${node}-emane
     hostname: ${node}-emane
+    init: true
     cap_add:
       - NET_ADMIN
       - SYS_NICE
@@ -55,6 +56,7 @@ services:
     image: ${biz_image}
     container_name: letce2-${node}-biz
     hostname: ${node}-biz
+    init: true
     cap_add:
       - NET_ADMIN
       - SYS_NICE

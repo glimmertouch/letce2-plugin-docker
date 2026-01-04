@@ -396,10 +396,10 @@ class Plugin(PluginBase):
                               args['manifest'])
 
         
-        # try:
-        #     clean_configuration(nodes_include, args['manifest'])
-        #     print("✅ Cleaned up experiment files")
-        # except Exception as e:
-        #     print(f"❌ Clean failed: {e}", file=sys.stderr)
-        #     sys.exit(1)
+        try:
+            clean_configuration(nodes_include, args['manifest'])
+            print("✅ Cleaned up experiment files")
+        except Exception as e:
+            print(f"❌ Clean failed: {e}", file=sys.stderr)
+            sys.exit(1)
     

@@ -13,8 +13,8 @@ then
 fi
 
 # run a local init if provided
-if [ -f $top_dir/$node/init_biz.local ]
+if [ -f $top_dir/$node/biz-init.local ]
 then
-    bash $top_dir/$node/init_biz.local "$top_dir" "$node" "$start_utc" \
+    bash $top_dir/$node/biz-init.local "$top_dir" "$node" "$start_utc" \
        2>&1 | tee  $top_dir/persist/$node/var/log/init_biz.log
 fi
