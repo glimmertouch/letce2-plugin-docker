@@ -5,10 +5,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
-        iproute2 iputils-ping net-tools \
+        iproute2 iputils-ping net-tools ethtool\
         tcpdump iperf3 dnsutils \
         wget curl ca-certificates \
         python3 python3-pip \
-        git make g++ libpcap-dev mgen\
+        git make g++ libpcap-dev mgen \
+        bison flex libgps-dev build-essential \
     ; \
     rm -rf /var/lib/apt/lists/*
+
+RUN set -eux; \
+    git clone https://github.com/OLSR/olsrd.git; \
+    cd olsrd; \
+    make build_all; \
+    make install_all; \
+    cd ..; \
+    rm -rf olsrd

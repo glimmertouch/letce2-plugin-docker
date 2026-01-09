@@ -7,6 +7,13 @@ import re
 from collections import defaultdict
 from letce2.utils.network import CIDRNotation
 
+# Global default. If letce2 preserves bools, bool works. Otherwise use 0/1.
+enable_biz_container_default = context.get('enable_biz_container', 1)
+
+def _enabled(v):
+  # Accept bool or 0/1 (including string '0'/'1'). Keep it minimal on purpose.
+  return not (v is False or v == 0 or v == '0')
+
 host_bridge=defaultdict(dict)
 for key in context.keys():
   m = re.match(r'bridge\.(\d+)\.(.+)', key)
@@ -33,10 +40,10 @@ for node,items in __share.items():
 services:
 % for node, index in __node_index.items():
   % if node != 'host':
-  ${node}-emane:
+  ${node}:
     image: ${emane_image}
-    container_name: letce2-${node}-emane
-    hostname: ${node}-emane
+    container_name: letce2-${node}
+    hostname: ${node}
     init: true
     cap_add:
       - NET_ADMIN
@@ -52,6 +59,8 @@ services:
         ipv4_address: ${bridge_opts['net']}
   % endfor
 
+  <% node_enable_biz = __share.get(node, {}).get('enable_biz_container', enable_biz_container_default) %>
+  % if _enabled(node_enable_biz):
   ${node}-biz:
     image: ${biz_image}
     container_name: letce2-${node}-biz
@@ -64,6 +73,7 @@ services:
       - ${__top_dir}/${node}:/experiment/${node}:ro
       - ${__top_dir}/persist/${node}:/experiment/persist/${node}:rw
     command: ["sleep", "infinity"]
+  % endif
   % endif
 % endfor
 

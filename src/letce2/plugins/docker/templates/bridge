@@ -1,12 +1,23 @@
 #!/bin/bash
 <%
 import re
+
+# Global default. If letce2 preserves bools, bool works. Otherwise use 0/1.
+enable_biz_container_default = context.get('enable_biz_container', 1)
+
+def _enabled(v):
+  return not (v is False or v == 0 or v == '0')
+
 biz_addrs = {}
+
 for node,items in __share.items():
-    for key, value in items.items():
-        m = re.match(r'biz_addr',key)
-        if m:
-           biz_addrs[node] = value
+  node_enable_biz = items.get('enable_biz_container', enable_biz_container_default)
+  if not _enabled(node_enable_biz):
+    continue
+  for key, value in items.items():
+    m = re.match(r'biz_addr',key)
+    if m:
+       biz_addrs[node] = value
 
 nodes_str = " ".join(biz_addrs.keys())
 %>
@@ -21,7 +32,7 @@ declare -A biz_addrs=(
 start_links() {
   for i in ${'"${!biz_addrs[@]}"'}; do
     biz="letce2-$i-biz"
-    emu="letce2-$i-emane"
+    emu="letce2-$i"
 
     pid_biz=$(docker inspect -f '{{.State.Pid}}' "$biz")
     pid_emu=$(docker inspect -f '{{.State.Pid}}' "$emu")

@@ -213,6 +213,13 @@ class Plugin(PluginBase):
             print("   Run `letce2 docker stop` first or use '--force'", file=sys.stderr)
             sys.exit(1)
         
+        # some process like emane-jammer-simple-service may not start properly
+        # if stale pid/log files exist from previous runs, so we clean up persist dir
+        subprocess.run(['sudo',
+                         'rm',
+                         '-rf',
+                         'persist'])
+        
         for node in nodes:  
             Path(f'persist/{node}/var/run').mkdir(parents=True, exist_ok=True)
             Path(f'persist/{node}/var/log').mkdir(parents=True, exist_ok=True)
@@ -290,27 +297,27 @@ class Plugin(PluginBase):
             if node == 'host':
                 continue
             
-            emane_node = f"letce2-{node}-emane"
+            emane_node = f"letce2-{node}"
             top_dir = "/experiment"
             env = "" # pre-built into container
-            log_path = f"./persist/{node}/var/log/init.log"
             exec_cmd = [
                 'docker', 'exec', emane_node,
                 'bash', '-c',
                 f"/experiment/{node}/init {top_dir} {node} '{env}' '{start_utc}'"
             ]
-            with open(log_path, 'w') as log_file:
-                subprocess.Popen(exec_cmd, stdout=log_file, stderr=subprocess.STDOUT)
+            subprocess.Popen(exec_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            
+            if Path(f"{node}/biz-init").exists() is False:
+                print(f"ℹ️  Skipping biz-init for {node} (no biz-init script found)")
+                continue
             
             biz_node = f"letce2-{node}-biz"
-            log_path = f"./persist/{node}/var/log/biz_init.log"
             exec_cmd = [
                 'docker', 'exec', biz_node,
                 'bash', '-c',
                 f"/experiment/{node}/biz-init {top_dir} {node} '{env}' '{start_utc}'"
             ]
-            with open(log_path, 'w') as log_file:
-                subprocess.Popen(exec_cmd, stdout=log_file, stderr=subprocess.STDOUT)
+            subprocess.Popen(exec_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         
     
     def _do_stop(self, nodes, args):
