@@ -1,0 +1,47 @@
+#!/bin/bash
+
+<%
+import re
+from collections import defaultdict
+docker_interfaces = {}
+
+for key in context.keys():
+    m = re.match(r'docker.interface\.(\d+)\.ipv4',key)
+    if m:
+        docker_interfaces[int(m.group(1))] = context[key]
+
+def _enabled(v):
+    return not (v is False or v == 0 or v == '0')
+
+enable_biz_container_default = context.get('enable_biz_container', 1)
+node_enable_biz = context.get('enable_biz_container', enable_biz_container_default)
+%>
+node_name=$1
+
+. ./functions
+
+# rename docker interfaces
+% for idx, ip in docker_interfaces.items(): 
+OTA_IFACE=$(ip -o -4 addr show scope global \
+              | awk -v target="${ip}" '$4 == target {print $2; exit}')
+if [ -z "$OTA_IFACE" ]; then
+    echo "Error: Could not find OTA interface for ${ip}" >&2
+    exit 1
+fi
+ip link set dev "$OTA_IFACE" down
+ip link set dev "$OTA_IFACE" name backchan${idx}
+ip link set dev backchan${idx} up
+
+wait_for_device $node_name backchan${idx} 10
+
+ethtool --offload backchan${idx} rx off tx off
+
+% endfor
+
+% if _enabled(node_enable_biz):
+# Wait for emane0 (created by bridge script from biz container veth pair)
+wait_for_device_ip_link $node_name emane0 10
+% endif
+
+
+

@@ -62,7 +62,7 @@ class Plugin(PluginBase):
             help='Ignore existing lock file'
         )
         subparser_build.set_defaults(plugin_subcommand='build')
-        
+
         # Start command - 启动容器
         subparser_start = subparsers.add_parser(
             'start',
@@ -93,14 +93,13 @@ class Plugin(PluginBase):
             action='store_true',
             help='Ignore existing lock file'
         )
-        
         subparser_start.add_argument(
             '--scenario-delay',
             type=int,
             metavar='SECONDS',
             default=40,
-            help='delay scenario for specified seconds [default: %(default)s].')
-
+            help='delay scenario for specified seconds [default: %(default)s].'
+        )
         subparser_start.set_defaults(plugin_subcommand='start')
         
         # Stop command - 停止容器
@@ -165,7 +164,6 @@ class Plugin(PluginBase):
             nodes_exclude: List of nodes to exclude
             args: Command arguments dict
         """
-        print("hello")
 
         match args['plugin_subcommand']:
             case 'build':

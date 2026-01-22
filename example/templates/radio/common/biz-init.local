@@ -1,0 +1,47 @@
+#!/bin/bash -
+
+top_dir=$1
+node_name=$2
+start_time=$3
+
+echo "top_dir: $top_dir"
+echo "node_name: $node_name"
+echo "start_time: $start_time"
+
+cd "$top_dir/$node_name"
+
+# load common functions
+. ./functions
+
+wait_for_device $node_name $node_name-biz 10
+ethtool --offload $node_name-biz rx off tx off
+# may have some warning
+# default docker ip rules is enough
+# consider adjust ip_forward rp_filter settings if needed
+if [ -f olsrd.conf ] &&
+       [ ! -f NO-olsrd ]
+then
+    olsrd -f olsrd.conf -d 0
+fi
+
+if [ -f mgen ] &&
+       [ ! -f NO-mgen ]
+then
+% if mgen_monitor_listen_address and mgen_monitor_listen_port:
+    start_mgen_monitor \
+        $node_name \
+        ${mgen_monitor_listen_address} \
+        ${mgen_monitor_listen_port} \
+        $top_dir/persist/$node_name/var/log/mgen.out \
+        $top_dir/persist/$node_name/var/run/mgen-monitor.pid \
+        $top_dir/persist/$node_name/var/log/mgen-monitor.log
+% endif
+    
+    start_mgen \
+        $node_name \
+        mgen \
+        $top_dir/persist/$node_name/var/log/mgen.out \
+        $top_dir/persist/$node_name/var/run/mgen.pid \
+        $top_dir/persist/$node_name/var/log/mgen.log \
+        "$start_time"
+fi

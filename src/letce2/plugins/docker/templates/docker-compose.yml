@@ -51,6 +51,7 @@ services:
     volumes:
       - ${__top_dir}/${node}:/experiment/${node}:ro
       - ${__top_dir}/persist/${node}:/experiment/persist/${node}:rw
+      - ${__top_dir}/../antenna-patterns:/experiment/antenna-patterns:ro
     command: ["sleep", "infinity"]
     networks:
       default: {}
