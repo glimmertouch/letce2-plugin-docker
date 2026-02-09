@@ -3,69 +3,23 @@ name = "letce2-plugin-docker"
 version = "0.1.0"
 description = "Docker container plugin for letce2 - modern alternative to LXC"
 readme = "README.md"
-authors = [
-    { name = "sher", email = "529926660@qq.com" }
-]
-requires-python = ">=3.8"
-license = { text = "BSD" }
-keywords = ["letce2", "docker", "container", "emulation", "testing"]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: BSD License",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
-]
+requires-python = ">=3.10"
 dependencies = [
     "mako>=1.1.0",
     "docker>=6.0.0",
 ]
 
-# 🎯 关键：声明这是 letce2 插件
 [project.entry-points."letce2.plugins"]
 docker = "letce2.plugins.docker.plugin:Plugin"
 
-[project.urls]
-Homepage = "https://github.com/adjacentlink/letce2-plugin-docker"
-Repository = "https://github.com/adjacentlink/letce2-plugin-docker"
-Documentation = "https://github.com/adjacentlink/letce2-plugin-docker/blob/main/README.md"
-
-# 可选的开发依赖
-[project.optional-dependencies]
-dev = [
-    "pytest>=7.0",
-    "pytest-cov>=4.0",
-    "black>=23.0",
-    "ruff>=0.1.0",
-]
-
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-# setuptools 配置
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["letce2*"]
 
-# 包含模板文件
 [tool.setuptools.package-data]
 "letce2.plugins.docker" = ["templates/*"]
 
-# ruff 配置（代码检查）
-[tool.ruff]
-line-length = 100
-target-version = "py38"
-
-[tool.ruff.lint]
-select = ["E", "F", "I"]
-ignore = ["E501"]
-
-# pytest 配置
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py"]

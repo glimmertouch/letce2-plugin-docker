@@ -26,8 +26,10 @@ from letce2.utils.network import CIDRNotation
   %endif
   
   <nem definition="emane-commeffect-nem.xml" id="${nem_id}">
-    <transport definition="emane-transraw.xml">
+    <transport definition="emane-transvirtual.xml">
       <param name="device" value="${lan_interface}"/>
+      <param name="address" value="${CIDRNotation.address(biz_addr)}"/>
+      <param name="mask" value="${CIDRNotation.netmask(biz_addr)}"/>
     </transport>
   </nem>
 </platform>

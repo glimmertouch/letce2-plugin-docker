@@ -13,8 +13,8 @@ cd "$top_dir/$node_name"
 # load common functions
 . ./functions
 
-wait_for_device $node_name $node_name-biz 10
-ethtool --offload $node_name-biz rx off tx off
+wait_for_device $node_name ${biz_interface} 10
+ethtool --offload ${biz_interface} rx off tx off
 # may have some warning
 # default docker ip rules is enough
 # consider adjust ip_forward rp_filter settings if needed

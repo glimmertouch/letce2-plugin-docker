@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nem SYSTEM "file:///usr/share/emane/dtd/nem.dtd">
 <nem>
-  <transport definition="emane-transraw.xml"/>
+  <transport definition="emane-transvirtual.xml"/>
   <mac definition="emane-tdma-radiomodel.xml"/>
   <phy>
     <param name="fixedantennagain"         value="0.0"/>

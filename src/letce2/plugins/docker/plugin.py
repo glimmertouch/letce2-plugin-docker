@@ -223,7 +223,31 @@ class Plugin(PluginBase):
             Path(f'persist/{node}/var/log').mkdir(parents=True, exist_ok=True)
             Path(f'persist/{node}/var/tmp').mkdir(parents=True, exist_ok=True)
         
-        
+        # RFC 2822
+        start_utc = time.strftime("%a, %d %b %Y %H:%M:%S +0000",
+                                  time.gmtime(time.time() + args['scenario_delay']))
+        # host: build veth links, generate eel and start broker
+        try:
+            subprocess.run(['sudo',
+                    'host/control',
+                    'prestart',
+                    os.getcwd(),
+                    args['environment'],
+                    start_utc])
+            # disable realtime scheduling contraints
+            subprocess.run(['sudo',
+                             'sysctl',
+                             'kernel.sched_rt_runtime_us=-1'])
+
+            subprocess.run(['sudo',
+                             'host/control',
+                             'start',
+                             os.getcwd(),
+                             args['environment'],
+                             start_utc])
+        except Exception as e:
+            print(f"❌ Error during experiment start: {e}", file=sys.stderr)
+            sys.exit(1)
         
         
         compose_file = Path("host/docker-compose.yml")
@@ -244,10 +268,7 @@ class Plugin(PluginBase):
             print(f"   Use `docker compose -f {compose_file} ps` to check status")
             
             Path(args['lock_file']).parent.mkdir(parents=True, exist_ok=True)
-            Path(args['lock_file']).touch()
-            
-            
-                        
+            Path(args['lock_file']).touch()                
             
         except subprocess.CalledProcessError as e:
             print(f"❌ Failed to start containers: {e}", file=sys.stderr)
@@ -258,38 +279,7 @@ class Plugin(PluginBase):
             print(f"❌ Error: {e}", file=sys.stderr)
             sys.exit(1)
             
-        # RFC 2822
-        start_utc = time.strftime("%a, %d %b %Y %H:%M:%S +0000",
-                                  time.gmtime(time.time() + args['scenario_delay']))
 
-        # host: build veth links, generate eel and start broker
-        try:
-            subprocess.run(['sudo',
-                             'host/control',
-                             'prestart',
-                             os.getcwd(),
-                             args['environment'],
-                             start_utc])
-
-            subprocess.run(['sudo',
-                             'host/bridge',
-                             'start'])
-
-            # disable realtime scheduling contraints
-            subprocess.run(['sudo',
-                             'sysctl',
-                             'kernel.sched_rt_runtime_us=-1'])
-
-            subprocess.run(['sudo',
-                             'host/control',
-                             'start',
-                             os.getcwd(),
-                             args['environment'],
-                             start_utc])
-        except Exception as e:
-            print(f"❌ Error during experiment start: {e}", file=sys.stderr)
-            sys.exit(1)
-            
         print("🚀 Initializing nodes...")
         for node in nodes:
             if node == 'host':

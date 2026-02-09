@@ -1,0 +1,29 @@
+#!/bin/bash
+
+
+node_name=$1
+
+. ./functions
+
+if ! [ -c /dev/net/tun ]; then
+ mkdir -p /dev/net
+ mknod -m 666 /dev/net/tun c 10 200
+fi
+
+# rename docker interfaces
+OTA_IFACE=$(ip -o -4 addr show scope global               | awk -v target="10.100.0.1/24" '$4 == target {print $2; exit}')
+if [ -z "$OTA_IFACE" ]; then
+    echo "Error: Could not find OTA interface for 10.100.0.1/24" >&2
+    exit 1
+fi
+ip link set dev "$OTA_IFACE" down
+ip link set dev "$OTA_IFACE" name backchan0
+ip link set dev backchan0 up
+
+wait_for_device $node_name backchan0 10
+
+ethtool --offload backchan0 rx off tx off
+
+
+
+

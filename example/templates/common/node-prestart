@@ -20,6 +20,11 @@ node_name=$1
 
 . ./functions
 
+if ! [ -c /dev/net/tun ]; then
+ mkdir -p /dev/net
+ mknod -m 666 /dev/net/tun c 10 200
+fi
+
 # rename docker interfaces
 % for idx, ip in docker_interfaces.items(): 
 OTA_IFACE=$(ip -o -4 addr show scope global \
@@ -37,11 +42,6 @@ wait_for_device $node_name backchan${idx} 10
 ethtool --offload backchan${idx} rx off tx off
 
 % endfor
-
-% if _enabled(node_enable_biz):
-# Wait for emane0 (created by bridge script from biz container veth pair)
-wait_for_device_ip_link $node_name emane0 10
-% endif
 
 
 

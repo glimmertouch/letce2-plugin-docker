@@ -12,8 +12,10 @@ from letce2.utils.network import CIDRNotation
   <param name="controlportendpoint" value="0.0.0.0:47000"/>
 
   <nem definition="emane-tdma-nem.xml" id="${nem_id}">
-    <transport definition="emane-transraw.xml">
-      <param name="device" value="emane0"/>
+    <transport definition="emane-transvirtual.xml">
+      <param name="device" value="${biz_interface}"/>
+      <param name="address" value="${CIDRNotation.address(biz_addr)}"/>
+      <param name="mask" value="${CIDRNotation.netmask(biz_addr)}"/>
     </transport>
   </nem>
 </platform>

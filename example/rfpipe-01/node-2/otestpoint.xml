@@ -1,0 +1,19 @@
+
+<otestpoint id="node-2"
+            discovery="10.100.0.2:8881"
+            publish="10.100.0.2:8882">
+  <probe configuration="otestpoint-probe-emane-physicallayer.xml">
+    <python module="otestpoint.emane.physicallayer"
+            class="PhysicalLayer"/>
+  </probe>
+
+  <probe configuration="otestpoint-probe-emane-rfpipe.xml">
+    <python module="otestpoint.emane.rfpipe"
+            class="RFPipe"/>
+  </probe>
+
+  <probe configuration="otestpoint-probe-emane-virtualtransport.xml">
+    <python module="otestpoint.emane.virtualtransport"
+            class="VirtualTransport"/>
+  </probe>
+</otestpoint>

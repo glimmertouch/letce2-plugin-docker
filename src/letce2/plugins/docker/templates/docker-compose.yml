@@ -49,6 +49,7 @@ services:
       - NET_ADMIN
       - SYS_NICE
     volumes:
+      - ${__top_dir}/host:/experiment/host:ro
       - ${__top_dir}/${node}:/experiment/${node}:ro
       - ${__top_dir}/persist/${node}:/experiment/persist/${node}:rw
       - ${__top_dir}/../antenna-patterns:/experiment/antenna-patterns:ro
@@ -65,17 +66,21 @@ services:
   ${node}-biz:
     image: ${biz_image}
     container_name: letce2-${node}-biz
-    hostname: ${node}-biz
+    depends_on:
+      - ${node}
     init: true
     cap_add:
       - NET_ADMIN
       - SYS_NICE
     volumes:
+      - ${__top_dir}/host:/experiment/host:ro
       - ${__top_dir}/${node}:/experiment/${node}:ro
       - ${__top_dir}/persist/${node}:/experiment/persist/${node}:rw
     command: ["sleep", "infinity"]
+    network_mode: "service:${node}"
   % endif
   % endif
+
 % endfor
 
 networks:

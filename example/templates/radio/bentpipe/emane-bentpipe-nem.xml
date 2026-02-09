@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE nem SYSTEM 'file:///usr/share/emane/dtd/nem.dtd'>
 <nem>
-  <transport definition="emane-transraw.xml">
-    <param name="arpcacheenable" value="off"/>
-    <param name="broadcastmodeenable" value="on"/>
-  </transport>
+  <transport definition="emane-transvirtual.xml"/>
   <mac definition="emane-bentpipe-radiomodel.xml"/>
   <phy>
     %if bandwidth_hz:
